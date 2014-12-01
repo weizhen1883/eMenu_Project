@@ -9,24 +9,25 @@ CREATE TABLE IF NOT EXISTS cuisineType (
 );
 
 CREATE TABLE IF NOT EXISTS cuisinelist (
-	cuisineName varchar(25) NOT NULL,
-	cuisineImage varchar(25) NOT NULL,
-	description varchar(25) NOT NULL,
+	cuisineName varchar(50) NOT NULL,
+	cuisineImage varchar(50) NOT NULL,
+	description varchar(50) NOT NULL,
 	cuisineMaterial varchar(25) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS cuisineImage (
-	imageName varchar(25) NOT NULL;
-	image blob NOT NULL;
-	imageType varchar(50) NOT NULL;
-)ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
-
 CREATE TABLE IF NOT EXISTS cuisineTypeSampleTB (
-	cuisineName varchar(25) NOT NULL,
+	cuisineName varchar(50) NOT NULL,
+	cuisinePrice DOUBLE(8,2) UNSIGNED NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS SpecialListTB LIKE cuisineTypeSampleTB;
+
+CREATE TABLE IF NOT EXISTS cuisineMaterialSample (
+	cuisineName varchar(50) NOT NULL,
 	cuisinePrice DOUBLE(8,2) UNSIGNED NOT NULL
 );
 
 INSERT INTO cuisineType VALUES (1, 'Appetizer', 'AppetizerTB');
 CREATE TABLE IF NOT EXISTS AppetizerTB LIKE cuisineTypeSampleTB;
-INSERT INTO cuisinelist VALUES ('Fries', 'FriesImage', 'FriesDescriotion', 'potatos');
+INSERT INTO cuisinelist VALUES ('Fries', 'Fries.jpg', 'Fries.txt', 'FriesMaterial');
 INSERT INTO AppetizerTB VALUES ('Fries', 2.99);

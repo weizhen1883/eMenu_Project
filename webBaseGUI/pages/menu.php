@@ -11,7 +11,7 @@
 		echo "<li><a href=\"editMenu.php\">Edit Menu</a></li>";
 	}
 	if ($_SESSION['cuisineEditable'] == "Y") {
-		echo "<li><a href=\"\">Edit Cuisines List</a></li>";
+		echo "<li><a href=\"editCuisineList.php\">Edit Cuisines List</a></li>";
 	}
 	if ($_SESSION['orderSubmitable'] == "Y") {
 		echo "<li><a href=\"\">Submit Order</a></li>";

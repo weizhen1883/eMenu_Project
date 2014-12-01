@@ -18,7 +18,7 @@
                 <td></td>
                 <td width="1024px" height="650px" >
                     <table width="100%" height="100%" background="../sources/pictures/background.jpg">
-                        <tr height="217px"><td width="42px"></td><td width="342px"></td><td width="642px"></td></tr>
+                        <tr height="217px"><td width="42px"></td><td width="342px"></td><td width="642px" align="right" valign="top"><a href="customersMenu.php"><img src="../sources/pictures/menuLogo.jpg" width="100px"></a></td></tr>
                         <tr height="217px"><td width="42px"></td><td width="342px">
                             <form name="userLogin" action="checklogin.php" method="post">
                                 <table width="342px" height="217px">
