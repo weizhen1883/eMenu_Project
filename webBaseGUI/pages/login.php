@@ -6,6 +6,7 @@
 ?>
 <html>
 	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     	<title>eMenu System</title>
     	<style type="text/css"></style>
         <script type="text/javascript" src="../sources/js/util-functions.js"></script>
@@ -23,7 +24,7 @@
                             <form name="userLogin" action="checklogin.php" method="post">
                                 <table width="342px" height="217px">
                                     <tr><td align="center">eMenu Restaurant Management System</td></tr>
-                                    <tr><td align="center">User Login</td></tr>
+                                    <tr><td align="center">User Login 用户登录</td></tr>
                                     <tr><td align="center">username: <input type="text" name="username" id="username" value="Customers" class="cleardefault"></td></tr>
                                     <tr><td align="center">password: <input type="password" name="psw" id="psw" value="Customers" class="cleardefault"></td></tr>
                                     <tr><td align="center"><input type="submit" name="Login" value="Login"></td></tr>
