@@ -2,6 +2,9 @@ package com.emenu.zhenw.emenucustomersapp;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -42,7 +46,6 @@ public class MainActivity extends ListActivity {
     private ProgressDialog pDialog;
     JSONParser jParser = new JSONParser();
     ArrayList<String> cuisineType;
-    ArrayList<HashMap<String, String>> cuisine;
     private static String url_all_products =
             "http://98.157.156.155:8080/androidphp/Android_Get_CuisineType.php";
     private static String url_images = "http://98.157.156.155:8080/sources/cuisines/photos/";
@@ -59,6 +62,8 @@ public class MainActivity extends ListActivity {
     private ListView cuisineTypeList;
     private HashMap<String, Integer> typeMap;
 
+    ArrayList<MyItem> item;
+
     JSONArray types = null;
     JSONArray cuisines = null;
 
@@ -68,15 +73,16 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.activity_main);
         cuisineTypeList = (ListView) findViewById(R.id.cuisineTypeList);
         cuisineType = new ArrayList<String>();
-        cuisine = new ArrayList<HashMap<String, String>>();
         typeMap = new HashMap<String, Integer>();
+        item = new ArrayList<MyItem>();
+
         new LoadCuisineTypes().execute();
 
         cuisineTypeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 choiceType = ((TextView) view.findViewById(R.id.cuisineType)).getText().toString();
-                cuisine = new ArrayList<HashMap<String, String>>();
+                item = new ArrayList<MyItem>();
                 new LoadCuisines().execute();
             }
         });
@@ -140,6 +146,7 @@ public class MainActivity extends ListActivity {
 
                         // Storing each json item in variable
                         String type = c.getString(TAG_TYPE);
+                        Log.d("TAG", type);
                         int hasCuisine = c.getInt(TAG_HASCUISINE);
                         typeMap.put(type, hasCuisine);
 
@@ -186,6 +193,7 @@ public class MainActivity extends ListActivity {
 
         @Override
         protected String doInBackground(String... args) {
+            MyItem tmpItem = new MyItem();
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             // getting JSON string from URL
             JSONObject json = jParser.makeHttpRequest(url_all_products, "GET", params);
@@ -197,41 +205,37 @@ public class MainActivity extends ListActivity {
                 int hasCuisine = typeMap.get(choiceType);
 
                 if (hasCuisine == 1) {
-                    StringBuilder s = new StringBuilder();
-                    s.append("cuisines_of_").append(choiceType);
-                    cuisines = json.getJSONArray(s.toString());
+                    cuisines = json.getJSONArray(choiceType);
 
                     for (int j = 0; j < cuisines.length(); j++) {
                         JSONObject a = cuisines.getJSONObject(j);
-                        String name = a.getString(TAG_NAME);
-                        String price = a.getString(TAG_PRICE);
+                        tmpItem.name = a.getString(TAG_NAME);
+                        tmpItem.price = a.getString(TAG_PRICE);
 
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        map.put(TAG_NAME, name);
-                        map.put(TAG_PRICE, price);
-
-                        //cuisine.add(map);
-
-                        s = new StringBuilder();
+                        StringBuilder s = new StringBuilder();
                         s.append(url_intros).append(a.getString(TAG_INTRO));
                         try {
                             URL url = new URL(s.toString());
-                            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
                             StringBuilder intro = new StringBuilder();
                             String line;
                             while ((line = in.readLine()) != null) {
                                 intro.append(line + "\n");
                             }
                             in.close();
-                            map.put(TAG_INTRO, intro.toString());
 
+                            tmpItem.intro = intro.toString();
                         } catch (MalformedURLException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 
-                        cuisine.add(map);
+                        s = new StringBuilder();
+                        s.append(url_images).append(a.getString(TAG_IMAGE));
+                        tmpItem.image = downloadBitmap(s.toString());
+
+                        item.add(tmpItem);
                     }
                 }
             } catch (JSONException e) {
@@ -247,18 +251,57 @@ public class MainActivity extends ListActivity {
             // updating UI from Background Thread
             runOnUiThread(new Runnable() {
                 public void run() {
-                    /**
-                     * Updating parsed JSON data into ListView
-                     * */
-                    ListAdapter adapter = new SimpleAdapter(
-                            MainActivity.this, cuisine,
-                            R.layout.cuisine, new String[]{TAG_NAME,
-                            TAG_PRICE,TAG_INTRO},
-                            new int[]{R.id.cuisineName, R.id.cuisinePrice,R.id.cuisineDescription});
+                    ListAdapter mAdapter = new CustomListAdapter(MainActivity.this, item);
                     // updating listview
-                    setListAdapter(adapter);
+                    setListAdapter(mAdapter);
                 }
             });
         }
+    }
+
+    public class MyItem {
+        public String name;
+        public String price;
+        public String intro;
+        public Bitmap image;
+    }
+
+    public Bitmap downloadBitmap(String url) {
+        final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+        final HttpGet getRequest = new HttpGet(url);
+        try {
+            HttpResponse response = client.execute(getRequest);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
+                Log.w("ImageDownloader", "Error " + statusCode
+                        + " while retrieving bitmap from " + url);
+                return null;
+            }
+
+            final HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                InputStream inputStream = null;
+                try {
+                    inputStream = entity.getContent();
+                    final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    return bitmap;
+                } finally {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    entity.consumeContent();
+                }
+            }
+        } catch (Exception e) {
+            // Could provide a more explicit error message for IOException or
+            // IllegalStateException
+            getRequest.abort();
+            Log.w("ImageDownloader", "Error while retrieving bitmap from " + url);
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+        return null;
     }
 }

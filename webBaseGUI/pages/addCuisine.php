@@ -1,17 +1,37 @@
 <?php
+	header('Content-Type: text/html; charset=utf-8');
 	define("Upload_DIR", "/var/www/sources/cuisines/photos/");
 	define("Intro_DIR", "/var/www/sources/cuisines/intros/");
 	session_start();
 	if(!isset($_SESSION['username']) || $_SESSION['cuisineEditable'] == "N") {
-        header("location:login.php");
+        if (isset($_SESSION['language'])&&$_SESSION['language']=="CN") {
+			header("location:login.php?CN");
+		} else {
+        	header("location:login.php?EN");
+    	}
     }
+
+    if (isset($_SESSION['language'])&&$_SESSION['language']=="CN") {
+		$title="添加菜肴";
+		$name="菜品名称";
+		$suggestPrice="建议零售价";
+		$recipeTableTitle=array("原料名称","用量","成本","毛利");
+		$buttonTile=array("添加","返回","编辑","修改","修改图片","删除","取消");
+	} else {
+    	$title="Add Cuisine";
+    	$name="Cuisine Name";
+    	$suggestPrice="Suggest Price For Sale";
+    	$recipeTableTitle=array("NAME","DOSAGE","COST","GROSS PROFIT");
+    	$buttonTile=array("ADD","GO BACK","Edit","Change","Change Image","Delete","Cancel");
+	}
 
     $host="localhost";
 	$mysql_username="root";
 	$mysql_password="1qaz2wsx";
 	$db_name="cuisineDB";
 
-	mysql_connect("$host","$mysql_username","$mysql_password")or die("cannot connect");
+	$conn=mysql_connect("$host","$mysql_username","$mysql_password")or die("cannot connect");
+	mysql_query("SET character_set_results = 'utf8', character_set_client = 'utf8', character_set_connection = 'utf8', character_set_database = 'utf8', character_set_server = 'utf8'", $conn);
 	mysql_select_db("$db_name")or die("cannot select DB");
 
 	if (isset($_GET['upload'])) {
@@ -60,6 +80,7 @@
 ?>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>Add Cuisine</title>
     	<style type="text/css"></style>
     	<script type="text/javascript" src="../sources/js/util-functions.js"></script>

@@ -14,17 +14,17 @@
     <ListView
         android:id="@+id/cuisineTypeList"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="4"
-        android:background="@color/cuisineTypeListBackground">
+        android:background="@color/background">
     </ListView>
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@color/cuisineListBackground">
+        android:background="@color/background">
     </ListView>
 
 

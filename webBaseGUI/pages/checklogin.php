@@ -1,4 +1,5 @@
 <?php
+	header('Content-Type: text/html; charset=utf-8');
 	ob_start();
 	$host="localhost";
 	$mysql_username="root";
@@ -15,17 +16,22 @@
 	$password=stripslashes($password);
 	$username=mysql_real_escape_string($username);
 	$password=mysql_real_escape_string($password);
-	$sql="SELECT * FROM userInfo WHERE username='$username' and password='$password'";
+	$sql="SELECT * FROM userInfo WHERE username='$username' AND password='$password'";
 	$result=mysql_query($sql);
 	$count=mysql_num_rows($result);
 
 	if($count==1){
 		$row=mysql_fetch_array($result,MYSQL_ASSOC);
 		$position=$row['position'];
-		$sql="SELECT * FROM positionPermission WHERE position='$position'";
+		$sql="SELECT * FROM positionPermission WHERE position_inEnglish='$position'";
 		$result=mysql_query($sql);
 		$row=mysql_fetch_array($result,MYSQL_ASSOC);
 		session_start();
+		if (isset($_GET['CN'])) {
+			$_SESSION['language']="CN";
+		} else {
+			$_SESSION['language']="EN";
+		}
 		$_SESSION['username']=$username;
 		$_SESSION['password']=$password;
 		$_SESSION['userEditable']=$row['userEditable'];
@@ -36,7 +42,11 @@
 		$_SESSION['orderChangeable']=$row['orderChangeable'];
 		header("location:login_success.php");
 	} else {
-		header("location:login.php?Login_fail");
+		if (isset($_GET['CN'])) {
+			header("location:login.php?CN&Login_fail");
+		} else {
+			header("location:login.php?EN&Login_fail");
+		}
 	}
 	ob_end_flush();
 ?>

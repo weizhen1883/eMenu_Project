@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	header('Content-Type: text/html; charset=utf-8');
     $host="localhost";
 	$mysql_username="root";
 	$mysql_password="1qaz2wsx";
@@ -10,6 +11,7 @@
 ?>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>Menu Edit</title>
     	<style type="text/css"></style>
     	<script type="text/javascript" src="../sources/js/util-functions.js"></script>

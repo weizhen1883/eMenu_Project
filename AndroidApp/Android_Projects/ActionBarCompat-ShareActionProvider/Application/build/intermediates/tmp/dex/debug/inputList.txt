@@ -1,7 +1,0 @@
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/classes/debug
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-1bcc53d208f333e7a36007a715e79e662d161a55.jar
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/pre-dexed/debug/classes-d11547e7865b6014107117c14ec69c056b0019e9.jar
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/pre-dexed/debug/classes-2e254b5250f480f9a24f7337be237509735783ec.jar
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-42eb7e7c2bd0864e3e216aba5bf20ca9f3268920.jar
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/pre-dexed/debug/classes-804bf035d2cb8297d133c2094e9f1881b25d6504.jar
-/Users/zhenw/Google Drive/eMenu_Project/AndroidApp/Android_Projects/ActionBarCompat-ShareActionProvider/Application/build/intermediates/pre-dexed/debug/classes-2f5c43513ca2a5fe97700cb1a2dba07a94a1fbe2.jar

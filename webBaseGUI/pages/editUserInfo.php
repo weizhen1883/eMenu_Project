@@ -1,15 +1,31 @@
 <?php
+	header('Content-Type: text/html; charset=utf-8');
 	session_start();
 	if(!isset($_SESSION['username']) || $_SESSION['userEditable'] == "N" || !isset($_GET['username'])) {
-        header("location:login.php");
+        if (isset($_SESSION['language'])&&$_SESSION['language']=="CN") {
+			header("location:login.php?CN");
+		} else {
+        	header("location:login.php?EN");
+    	}
     }
+
+    if (isset($_SESSION['language'])&&$_SESSION['language']=="CN") {
+		$title="修改用户信息: ";
+		$tableTitle=array("用户名","密码","姓","名", "昵称", "出生日期", "身份证号码", "职位");
+		$buttonTile=array("确定","返回");
+	} else {
+    	$title="Edit User Information: ";
+    	$tableTitle=array("USERNAME","PASSWORD","LAST NAME","FIRST NAME", "NICK NAME", "DATE OF BIRTH", "ID NUMBER", "POSITION");
+    	$buttonTile=array("SUBMIT","GO BACK");
+	}
 
     $host="localhost";
 	$mysql_username="root";
 	$mysql_password="1qaz2wsx";
 	$db_name="userDB";
 
-	mysql_connect("$host","$mysql_username","$mysql_password")or die("cannot connect");
+	$conn=mysql_connect("$host","$mysql_username","$mysql_password")or die("cannot connect");
+	mysql_query("SET character_set_results = 'utf8', character_set_client = 'utf8', character_set_connection = 'utf8', character_set_database = 'utf8', character_set_server = 'utf8'", $conn);
 	mysql_select_db("$db_name")or die("cannot select DB");
 
 	$username=$_GET['username'];
@@ -58,6 +74,12 @@
 			$resultUpdate=mysql_query($sqlUpdate);
 			$Error="NULL";
 		}
+		if ($row['nickname']!=$_POST['nickname']) {
+			$nickname=$_POST['nickname'];
+			$sqlUpdate="UPDATE userInfo SET nickname='$nickname' WHERE username='$username'";
+			$resultUpdate=mysql_query($sqlUpdate);
+			$Error="NULL";
+		}
 		if ($row['DOB']!=$_POST['birthday']) {
 			$birthday=$_POST['birthday'];
 			$sqlUpdate="UPDATE userInfo SET DOB='$birthday' WHERE username='$username'";
@@ -82,7 +104,7 @@
 			$sqlUpdate="UPDATE userInfo SET position='$position' WHERE username='$username'";
 			$resultUpdate=mysql_query($sqlUpdate);
 			if ($username==$_SESSION['username']) {
-				$sqlPosition="SELECT * FROM positionPermission WHERE position='$position'";
+				$sqlPosition="SELECT * FROM positionPermission WHERE position_inEnglish='$position'";
 				$resultPosition=mysql_query($sqlPosition);
 				$rowPosition=mysql_fetch_array($resultPosition,MYSQL_ASSOC);
 				$_SESSION['userEditable']=$rowPosition['userEditable'];
@@ -105,6 +127,7 @@
 
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>User Information Edit</title>
     	<style type="text/css"></style>
         <script type="text/javascript" src="../sources/js/util-functions.js"></script>
@@ -115,25 +138,34 @@
 			<tr>
 				<td width="5%"></td>
 				<td width="90%" align="center"><form name="userInfoEdit" action="editUserInfo.php?username=<?php echo "$username";?>&edited" method="post"><table width="400px">
-					<tr><td align="center">Edit User Information: <hr /></td><td></td></tr>
-					<tr><td align="center">username</td><td><?php echo "<input type=\"text\" name=\"username\" id=\"username\" value=\"". $row['username'] ."\" class=\"cleardefault\">";?></td></tr>
-					<tr><td align="center">password</td><td><?php echo "<input type=\"password\" name=\"password\" id=\"password\" value=\"". $row['password'] ."\" class=\"cleardefault\">";?></td></tr>
-					<tr><td align="center">Last Name</td><td><?php echo "<input type=\"text\" name=\"lname\" id=\"lname\" value=\"". $row['lname'] ."\" class=\"cleardefault\">";?></td></tr>
-					<tr><td align="center">First Name</td><td><?php echo "<input type=\"text\" name=\"fname\" id=\"fname\" value=\"". $row['fname'] ."\" class=\"cleardefault\">";?></td></tr>
-					<tr><td align="center">Date of Birth</td><td><?php
+					<tr><td align="center"><?php echo $title; ?><hr /></td><td></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[0]; ?></td><td><?php echo "<input type=\"text\" name=\"username\" id=\"username\" value=\"". $row['username'] ."\" class=\"cleardefault\">";?></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[1]; ?></td><td><?php echo "<input type=\"password\" name=\"password\" id=\"password\" value=\"". $row['password'] ."\" class=\"cleardefault\">";?></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[2]; ?></td><td><?php echo "<input type=\"text\" name=\"lname\" id=\"lname\" value=\"". $row['lname'] ."\" class=\"cleardefault\">";?></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[3]; ?></td><td><?php echo "<input type=\"text\" name=\"fname\" id=\"fname\" value=\"". $row['fname'] ."\" class=\"cleardefault\">";?></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[4]; ?></td><td><?php echo "<input type=\"text\" name=\"nickname\" id=\"nickname\" value=\"". $row['nickname'] ."\" class=\"cleardefault\">";?></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[5]; ?></td><td><?php
 						echo "<input type=\"date\" name=\"birthday\" value=\"". $row['DOB'] ."\">";
 					?></td></tr>
-					<tr><td align="center">ID Number</td><td><?php echo "<input type=\"text\" name=\"IDnumber\" id=\"IDnumber\" value=\"". $row['IDnumber'] ."\" class=\"cleardefault\">";?></td></tr>
-					<tr><td align="center">Position</td><td><?php
+					<tr><td align="center"><?php echo $tableTitle[6]; ?></td><td><?php echo "<input type=\"text\" name=\"IDnumber\" id=\"IDnumber\" value=\"". $row['IDnumber'] ."\" class=\"cleardefault\">";?></td></tr>
+					<tr><td align="center"><?php echo $tableTitle[7]; ?></td><td><?php
 						echo "<select name=\"position\">";
 						$sqlPosition="SELECT * FROM positionPermission";
 						$resultPosition=mysql_query($sqlPosition);
 						while($rowPosition=mysql_fetch_array($resultPosition,MYSQL_ASSOC)){
-							echo "<option value=\"". $rowPosition['position'] ."\" ";
-							if ($row['position']==$rowPosition['position']) {
-								echo "selected";
+							if (isset($_SESSION['language'])&&$_SESSION['language']=="CN") {
+								echo "<option value=\"". $rowPosition['position_inEnglish'] ."\" ";
+								if ($row['position']==$rowPosition['position_inEnglish']) {
+									echo "selected";
+								}
+								echo ">". $rowPosition['position_inChinese'] ."</option>";
+							} else {
+								echo "<option value=\"". $rowPosition['position_inEnglish'] ."\" ";
+								if ($row['position']==$rowPosition['position_inEnglish']) {
+									echo "selected";
+								}
+								echo ">". $rowPosition['position_inEnglish'] ."</option>";
 							}
-							echo ">". $rowPosition['position'] ."</option>";
 						}
 					?></td></tr>
 					<tr><td align="center"><?php
@@ -145,7 +177,7 @@
 							echo "<br>";
 						}
 					?></td><td><br></td></tr>
-					<tr><td align="center"><input type="submit" name="Submit" value="Submit"></td><td><input type="button" onclick="location.href='editUsers.php'" value="Go Back"></td></tr>
+					<tr><td align="center"><input type="submit" name="Submit" value="<?php echo $buttonTile[0]; ?>"></td><td><input type="button" onclick="location.href='editUsers.php'" value="<?php echo $buttonTile[1]; ?>"></td></tr>
 				</table></form></td>
 				<td width="5%"></td>
 			</tr>

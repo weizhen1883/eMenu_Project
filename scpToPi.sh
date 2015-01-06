@@ -5,6 +5,7 @@ then
 	scp -P 23 AndroidApp/phpCodes/* root@192.168.1.253:/var/www/androidphp/
 elif [[("$1" = "--WebPages") || ("$1" = "-wp")]]
 then
+	scp -P 23 webBaseGUI/index.php root@192.168.1.253:/var/www/
 	scp -P 23 webBaseGUI/pages/* root@192.168.1.253:/var/www/pages/
 elif [[("$1" = "--DatabaseFile") || ("$1" = "-df")]]
 then

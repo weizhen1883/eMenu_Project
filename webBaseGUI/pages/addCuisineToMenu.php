@@ -3,6 +3,7 @@
 	if(!isset($_SESSION['username']) || $_SESSION['menuEditable'] == "N" || !isset($_GET['cuisineType'])) {
         header("location:login.php");
     }
+    header('Content-Type: text/html; charset=utf-8');
 
     $host="localhost";
 	$mysql_username="root";
@@ -28,6 +29,7 @@
 ?>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>Add Cuisine To Menu</title>
     	<style type="text/css"></style>
 	</head>
