@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,27 +15,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,12 +37,13 @@ public class MainActivity extends ListActivity {
     JSONParser jParser = new JSONParser();
     ArrayList<String> cuisineType;
     private static String url_all_products =
-            "http://98.157.156.155:8080/androidphp/Android_Get_CuisineType.php";
-    private static String url_images = "http://98.157.156.155:8080/sources/cuisines/photos/";
+            "http://192.168.1.253/androidphp/Android_Get_CuisineType_v2.php?systemLanguage=English";
+    private static String url_images = "http://192.168.1.253/sources/cuisines/photos/";
     private static String url_intros = "http://98.157.156.155:8080/sources/cuisines/intros/";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_HASCUISINE = "hasCuisine";
     private static final String TAG_CUISINETYPES = "cuisineTypes";
+    private static final String TAG_TYPE_ID = "typeID";
     private static final String TAG_TYPE = "type";
     private static final String TAG_NAME = "name";
     private static final String TAG_PRICE = "price";
@@ -61,6 +52,7 @@ public class MainActivity extends ListActivity {
     private String choiceType;
     private ListView cuisineTypeList;
     private HashMap<String, Integer> typeMap;
+    private HashMap<String, String> typeIDMap;
 
     ArrayList<MyItem> item;
 
@@ -74,6 +66,7 @@ public class MainActivity extends ListActivity {
         cuisineTypeList = (ListView) findViewById(R.id.cuisineTypeList);
         cuisineType = new ArrayList<String>();
         typeMap = new HashMap<String, Integer>();
+        typeIDMap = new HashMap<String, String>();
         item = new ArrayList<MyItem>();
 
         new LoadCuisineTypes().execute();
@@ -145,10 +138,12 @@ public class MainActivity extends ListActivity {
                         JSONObject c = types.getJSONObject(i);
 
                         // Storing each json item in variable
+                        String typeID = c.getString(TAG_TYPE_ID);
                         String type = c.getString(TAG_TYPE);
                         Log.d("TAG", type);
                         int hasCuisine = c.getInt(TAG_HASCUISINE);
                         typeMap.put(type, hasCuisine);
+                        typeIDMap.put(type, typeID);
 
                         // adding HashList to ArrayList
                         cuisineType.add(type);
@@ -205,33 +200,15 @@ public class MainActivity extends ListActivity {
                 int hasCuisine = typeMap.get(choiceType);
 
                 if (hasCuisine == 1) {
-                    cuisines = json.getJSONArray(choiceType);
+                    cuisines = json.getJSONArray(typeIDMap.get(choiceType));
 
                     for (int j = 0; j < cuisines.length(); j++) {
                         JSONObject a = cuisines.getJSONObject(j);
                         tmpItem.name = a.getString(TAG_NAME);
                         tmpItem.price = a.getString(TAG_PRICE);
+                        tmpItem.intro = a.getString(TAG_INTRO);
 
                         StringBuilder s = new StringBuilder();
-                        s.append(url_intros).append(a.getString(TAG_INTRO));
-                        try {
-                            URL url = new URL(s.toString());
-                            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-                            StringBuilder intro = new StringBuilder();
-                            String line;
-                            while ((line = in.readLine()) != null) {
-                                intro.append(line + "\n");
-                            }
-                            in.close();
-
-                            tmpItem.intro = intro.toString();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        s = new StringBuilder();
                         s.append(url_images).append(a.getString(TAG_IMAGE));
                         tmpItem.image = downloadBitmap(s.toString());
 
@@ -251,10 +228,11 @@ public class MainActivity extends ListActivity {
             // updating UI from Background Thread
             runOnUiThread(new Runnable() {
                 public void run() {
-                    ListAdapter mAdapter = new CustomListAdapter(MainActivity.this, item);
+                    ListAdapter mAdapter = new CuisineAdapter(MainActivity.this, R.layout.cuisine, R.id.cuisineName, item);
                     // updating listview
                     setListAdapter(mAdapter);
                 }
+
             });
         }
     }

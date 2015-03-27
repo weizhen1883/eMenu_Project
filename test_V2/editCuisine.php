@@ -68,6 +68,14 @@
     $sql="UPDATE cuisineList SET typeID=$cuisineTypeID WHERE cuisineID=$cuisineID";
     mysql_query($sql);
 
+    $dailyspecialSettings=$_POST['dailyspecial'];
+    if ($dailyspecialSettings==1) {
+      $dailyspecialPrice=$_POST['specialPrice'];
+      mysql_query("UPDATE cuisineList SET dailySpecial=1,specialPrice=$dailyspecialPrice WHERE cuisineID=$cuisineID");
+    } else {
+      mysql_query("UPDATE cuisineList SET dailySpecial=0 WHERE cuisineID=$cuisineID");
+    }
+
     if (isset($_GET['type'])) {
       $typeID=$_GET['type'];
       header("location:emenu.php?type=".$typeID);

@@ -47,6 +47,16 @@ erm.emenu.enableButtons = function() {
 		} else {
 			$("#edit-cuisine-modal select[name=cuisine_type]").find("option[value="+ cuisineTypeID +"]").attr("selected", true);
 		}
+
+		dailyspecial = $(this).find(".dailyspecial").html();
+		console.log("dailyspecial: " + dailyspecial);
+		if (dailyspecial == "1") {
+			$("#edit-cuisine-modal input[name=dailyspecial]").attr("checked", true);
+		};
+
+		specialPrice = $(this).find(".specialPrice").html();
+		console.log("special price: " + specialPrice);
+		$("#edit-cuisine-modal input[name=specialPrice]").val(specialPrice);
 		
 		cuisineID = $(this).find(".cuisineID").html();
 		console.log("EDIT ID: " + cuisineID);

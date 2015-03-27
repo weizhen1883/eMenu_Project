@@ -64,6 +64,8 @@
         'specialPrice' => 'Special Price',
         'description' => 'Description',
         'cuisine_type' => 'Cuisine Type',
+        'daily_special_setting' => 'Daily Special',
+        'set_as_daily_special' => 'Set As Daily Special',
         'submit' => 'Submit',
         'cancel' => 'Cancel'),
       'add_cuisine_type_menu' => array(
@@ -143,6 +145,8 @@
         'specialPrice' => '特价',
         'description' => '简介',
         'cuisine_type' => '分类',
+        'daily_special_setting' => '每日特价',
+        'set_as_daily_special' => '设置为特价',
         'submit' => '确定',
         'cancel' => '取消'),
       'add_cuisine_type_menu' => array(
@@ -306,6 +310,7 @@
                   $specialPrice=$row['specialPrice'];
                   $retailPrice=$row['retailPrice'];
                   $cuisineTypeID=$row['typeID'];
+                  $dailyspecialCheck=$row['dailySpecial'];
                   if ($systemLanguage == 'en') {
                     $cuisineName=$row['cuisineName_en'];
                     $descriptionName=$row['description_en'];
@@ -350,8 +355,10 @@
                     echo "<div class=\"hidden cuisineID\">".$cuisineID."</div>";
                     echo "<div class=\"hidden cuisineName\">".$cuisineName."</div>";
                     echo "<div class=\"hidden retailPrice\">".$retailPrice."</div>";
+                    echo "<div class=\"hidden specialPrice\">".$specialPrice."</div>";
                     echo "<div class=\"hidden description\">".$description."</div>";
                     echo "<div class=\"hidden cuisineTypeID\">".$cuisineTypeID."</div>";
+                    echo "<div class=\"hidden dailyspecial\">".$dailyspecialCheck."</div>";
                     echo "</button>";
                   }
                   echo "</div>";
@@ -461,6 +468,19 @@
                     }
                   ?>
                   </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="cuisine-dailyspecial-setting" class="col-sm-3 control-label">
+                  <?php echo $constantString['edit_cuisine_menu']['daily_special_setting'].": "; ?>
+                </label>
+                <div class="col-sm-4 control-label">
+                  <input type="checkbox" name="dailyspecial" value="1">
+                  <?php echo $constantString['edit_cuisine_menu']['set_as_daily_special']; ?>
+                </div>
+                <label for="special-price-input" class="col-sm-3 control-label"><?php echo $constantString['edit_cuisine_menu']['specialPrice'].": "; ?></label>
+                <div class="col-sm-2">
+                  <input type="text" name="specialPrice" class="form-control" id="special-price-input">
                 </div>
               </div>
             </div>
